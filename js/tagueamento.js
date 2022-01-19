@@ -34,17 +34,22 @@ jQuery('.card').click((event) => {
   sendEvent(eventCategory='analise', eventAction='ver_mais', eventLabel=name);
 });
 
-// Enviando evento quando o usuário preenche um campo ou envia o formulário
-jQuery('.contato :input').each((_, element) => {
-  if(element.type !== 'submit') {
-    jQuery(element).blur(() => {
-      if(element.value !== '') {
-        sendEvent(eventCategory='contato', eventAction=element.id, eventLabel='preencheu');
-      }
-    });
-  } else {
-    jQuery(element).click(() => {
-      sendEvent(eventCategory='contato', eventAction='enviado', eventLabel='enviado');
-    });
-  }
-})
+// Enviando evento quando o usuário preenche um campo
+jQuery('.contato input').each((_, element) => {
+  var filled_inputs = [];
+
+  jQuery(element).change(() => {
+    var isEmpty = element.type !== 'checkbox'?
+      jQuery(element).val() === '' : jQuery(element).is(':checked') === false;
+    
+    if(!isEmpty && filled_inputs.indexOf(element.id) === -1) {
+      filled_inputs.push(element.id);
+      sendEvent(eventCategory='contato', eventAction=element.id, eventLabel='preencheu');
+    }
+  });
+});
+
+// Enviando evento quando o formulário é enviado
+jQuery('.contato').submit(() => {
+  sendEvent(eventCategory='contato', eventAction='enviado', eventLabel='enviado');
+});
